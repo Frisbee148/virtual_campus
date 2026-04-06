@@ -58,7 +58,7 @@ Linter.prototype.isSafeString = function (node) {
   if (lastArg.type !== 'ObjectExpression') return false
 
   const hasWrapper = lastArg.properties.some(
-    prop => prop.key.name === 'wrapper' || prop.key.name === 'wrappers'
+    prop => prop.key.name === 'wrapper' || prop.key.name === 'wrappers',
   )
   return hasWrapper
 }
@@ -118,7 +118,7 @@ allPaths.forEach(({paths, glob, defaultIgnores = ['**/__tests__/**/*.js'], trans
             .toString()
             .trim()
             .split(/\r?\n|\r/)
-        : []
+        : [],
     )
     let candidates = getFilesAndDirs('.')
     candidates = {files: candidates[0], dirs: candidates[1]}

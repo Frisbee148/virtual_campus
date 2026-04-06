@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"docker compose exec -T web bundle exec rake db:initial_setup 2>&1\",\"timeout\":300000,\"description\":\"Run initial setup (admin user, etc.)\"}",
+  "error": "Exit code 1\ntime=\"2026-04-07T01:58:34+05:30\" level=warning msg=\"/home/casp1an/Code/virtualCampusv1/docker-compose.override.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nDEPRECATION WARNING: `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1. To opt in to the new behavior, set `config.active_support.to_time_preserves_timezone = :zone`. (called from <class:Application> at /usr/src/app/confi...",
+  "timestamp": "2026-04-06T20:28:37.932Z",
+  "retry_count": 1
+}

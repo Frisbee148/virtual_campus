@@ -19,7 +19,6 @@
  */
 
 /* eslint-disable no-constant-condition */
-/* eslint-disable no-await-in-loop */
 
 const promisify = require('util').promisify
 const exec = promisify(require('child_process').exec)
@@ -43,7 +42,7 @@ async function monitorWebpack() {
     if (currentUtilization <= BASELINE_CPU_UTILIZATION && !webpackFinished) {
       webpackFinished = true
       exec(
-        'osascript -e \'display notification "Canvas Webpack build finished" with title "Build Finished"\''
+        'osascript -e \'display notification "Canvas Webpack build finished" with title "Build Finished"\'',
       )
     }
     if (currentUtilization > BASELINE_CPU_UTILIZATION && webpackFinished) {

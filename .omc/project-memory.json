@@ -1,0 +1,634 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775503142860,
+  "projectRoot": "/home/casp1an/Code/virtualCampusv1",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=20.0.0",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      },
+      {
+        "name": "Ruby",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "Gemfile"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "jest",
+        "version": "29.7.0",
+        "category": "testing"
+      },
+      {
+        "name": "vitest",
+        "version": "3.0.3",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "yarn",
+    "runtime": "Node.js 20.0.0"
+  },
+  "build": {
+    "buildCommand": "yarn build",
+    "testCommand": "yarn test",
+    "lintCommand": "yarn lint",
+    "devCommand": null,
+    "scripts": {
+      "test": "vitest run --color",
+      "test:coverage": "script/generate_js_coverage",
+      "test:watch": "vitest watch --color",
+      "test:build": "if [ \"$COVERAGE\" = \"1\" ]; then vitest run --color --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL; else vitest run --color --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL; fi",
+      "test:packages": "wsrun --report -m -l -s -c test",
+      "build": "yarn run graphql:codegen && yarn run build:css && yarn run build:packages && yarn run build:js",
+      "build:watch": "concurrently --raw \"yarn build:css:watch\" \"yarn build:js:watch\" \"yarn graphql:codegen --watch\"",
+      "build:css": "brandable_css",
+      "build:css:compressed": "SASS_STYLE=compressed brandable_css",
+      "build:css:watch": "brandable_css --watch",
+      "build:js": "yarn run webpack-development",
+      "build:js:watch": "yarn run webpack",
+      "build:packages": "wsrun --fast-exit --exclude-missing --report -c build",
+      "check": "yarn check:ts && yarn lint --quiet",
+      "check:js": "tsc --checkJs -p tsconfig.json",
+      "generate:extensions": "node ui-build/webpack/generatePluginExtensions.js",
+      "check:ts": "yarn generate:extensions && tsc -p tsconfig.json",
+      "check:ts:watch": "yarn generate:extensions && tsc --watch -p tsconfig.json",
+      "check:ts:native": "yarn generate:extensions && tsgo --noEmit -p tsconfig.tsgo.json",
+      "check:ts:native:watch": "yarn generate:extensions && tsgo --watch --noEmit -p tsconfig.tsgo.json",
+      "check:biome": "yarn biome ci --since=HEAD^ --changed",
+      "graphql:codegen": "yarn graphql-codegen --config ui/codegen.ts",
+      "serve": "gulp rev 1> /dev/null & NODE_ENV=development rspack serve",
+      "lint:packages": "eslint packages --cache --concurrency=auto",
+      "lint:staged": "lint-staged",
+      "lint:style": "stylelint './app/**/*.{css,scss}' './packages/**/*.{css,scss}'",
+      "lint:xss": "node ./script/xsslint.js",
+      "i18n:check": "node_modules/@instructure/i18nliner-canvas/bin/i18nliner check",
+      "i18n:extract": "node_modules/@instructure/i18nliner-canvas/bin/i18nliner export --translationsFile config/locales/generated/en-js.json --indexFile config/locales/generated/en-js-index.json",
+      "lint": "eslint ui --cache --concurrency=auto",
+      "postinstall": "yarn dedupe-yarn; patch-package; rm -rf node_modules/@instructure/outcomes-ui/node_modules/@instructure; [ -f ./script/install_hooks ] && ./script/install_hooks || true",
+      "webpack:analyze": "SKIP_SOURCEMAPS=1 WEBPACK_PEDANTIC=0 rspack --analyze",
+      "webpack": "gulp rev 1> /dev/null & NODE_ENV=development rspack --watch=true & yarn graphql:codegen --watch",
+      "webpack-development": "NODE_ENV=development rspack build",
+      "webpack-production": "NODE_ENV=production rspack build",
+      "jspec": "./spec/jspec.sh",
+      "jspec-watch": "./spec/jspec.sh --watch",
+      "a11y-report": "./spec/jspec.sh --a11y",
+      "upgrade-and-dedupe": "rm -rf yarn.lock node_modules && yes 1 | yarn install --flat --production --ignore-scripts && git checkout package.json && yarn install && git add yarn.lock",
+      "upgrade-instructure-ui": "script/upgrade-instructure-ui",
+      "dedupe-yarn": "yarn yarn-deduplicate",
+      "clean": "wsrun --serial --exclude-missing -c clean"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": true,
+    "workspaces": [
+      "gems/plugins/*",
+      "packages/*",
+      "ui/engine",
+      "ui/shared/*"
+    ],
+    "mainDirectories": [
+      "app",
+      "bin",
+      "lib",
+      "public",
+      "spec"
+    ],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "Gemfile.d": {
+      "path": "Gemfile.d",
+      "purpose": null,
+      "fileCount": 16,
+      "lastAccessed": 1775503142848,
+      "keyFiles": [
+        "_before.rb",
+        "app.rb",
+        "app_server.rb",
+        "assets.rb",
+        "development.rb"
+      ]
+    },
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 0,
+      "lastAccessed": 1775503142849,
+      "keyFiles": []
+    },
+    "bin": {
+      "path": "bin",
+      "purpose": "Executable scripts",
+      "fileCount": 12,
+      "lastAccessed": 1775503142852,
+      "keyFiles": [
+        "brakeman",
+        "dress_code",
+        "flakey_spec_catcher",
+        "lint",
+        "rails"
+      ]
+    },
+    "build": {
+      "path": "build",
+      "purpose": "Build output",
+      "fileCount": 5,
+      "lastAccessed": 1775503142852,
+      "keyFiles": [
+        "Dockerfile.puma.template",
+        "Dockerfile.template",
+        "README.md",
+        "docker_utils.rb",
+        "dockerfile_writer.rb"
+      ]
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 52,
+      "lastAccessed": 1775503142854,
+      "keyFiles": [
+        "amazon_s3.yml.example",
+        "application.rb",
+        "boot.rb",
+        "bounce_notifications.yml.example",
+        "brakeman.ignore"
+      ]
+    },
+    "db": {
+      "path": "db",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775503142854,
+      "keyFiles": []
+    },
+    "doc": {
+      "path": "doc",
+      "purpose": null,
+      "fileCount": 14,
+      "lastAccessed": 1775503142854,
+      "keyFiles": [
+        "DEPRECATION.md",
+        "app_and_jobs_gem_groups.md",
+        "canvas_operations_library.md",
+        "copyright.md",
+        "detect_n_plus_one_queries.md"
+      ]
+    },
+    "docker-compose": {
+      "path": "docker-compose",
+      "purpose": null,
+      "fileCount": 13,
+      "lastAccessed": 1775503142854,
+      "keyFiles": [
+        "consul.override.yml",
+        "dynamodb.override.yml",
+        "kinesis.override.yml",
+        "lti-test-tool.override.yml",
+        "mailcatcher.override.yml"
+      ]
+    },
+    "gems": {
+      "path": "gems",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1775503142854,
+      "keyFiles": [
+        "README.md",
+        "gemfile_prefix.rb",
+        "test_all_gems.sh"
+      ]
+    },
+    "hooks": {
+      "path": "hooks",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775503142854,
+      "keyFiles": [
+        "pre-commit"
+      ]
+    },
+    "inst-cli": {
+      "path": "inst-cli",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775503142855,
+      "keyFiles": []
+    },
+    "jest": {
+      "path": "jest",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775503142855,
+      "keyFiles": [
+        "stubInstUi.js"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 160,
+      "lastAccessed": 1775503142855,
+      "keyFiles": [
+        "abort_exception_matcher.rb",
+        "account_services.rb",
+        "address_book.rb",
+        "anonymity.rb",
+        "api.rb"
+      ]
+    },
+    "log": {
+      "path": "log",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775503142855,
+      "keyFiles": []
+    },
+    "packages": {
+      "path": "packages",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775503142855,
+      "keyFiles": []
+    },
+    "patches": {
+      "path": "patches",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775503142855,
+      "keyFiles": [
+        "format-message+6.2.3.patch"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 14,
+      "lastAccessed": 1775503142857,
+      "keyFiles": [
+        "422.html",
+        "500.html",
+        "Canvas.png",
+        "_crossdomain.xml",
+        "apple-touch-icon.png"
+      ]
+    },
+    "script": {
+      "path": "script",
+      "purpose": null,
+      "fileCount": 32,
+      "lastAccessed": 1775503142857,
+      "keyFiles": [
+        "brakeman",
+        "bundle_update",
+        "bundle_update_config.yml",
+        "canvas_init",
+        "canvas_update"
+      ]
+    },
+    "spec": {
+      "path": "spec",
+      "purpose": "Test specifications",
+      "fileCount": 25,
+      "lastAccessed": 1775503142857,
+      "keyFiles": [
+        "ams_spec_helper.rb",
+        "broadcast_integration.rb",
+        "canvas_simplecov.rb",
+        "conditional_release_spec_helper.rb",
+        "coverage_tool.rb"
+      ]
+    },
+    "tmp": {
+      "path": "tmp",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775503142857,
+      "keyFiles": []
+    },
+    "ui": {
+      "path": "ui",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1775503142857,
+      "keyFiles": [
+        "AGENTS.md",
+        "api.d.ts",
+        "codegen.ts",
+        "featureBundles.ts",
+        "global.d.ts"
+      ]
+    },
+    "ui-build": {
+      "path": "ui-build",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1775503142857,
+      "keyFiles": [
+        "package.json",
+        "params.js"
+      ]
+    },
+    "vendor": {
+      "path": "vendor",
+      "purpose": "Third-party code",
+      "fileCount": 0,
+      "lastAccessed": 1775503142857,
+      "keyFiles": []
+    },
+    "app/controllers": {
+      "path": "app/controllers",
+      "purpose": "Controllers",
+      "fileCount": 202,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "accessibility_controller.rb",
+        "accessibility_issues_controller.rb",
+        "account_calendars_api_controller.rb"
+      ]
+    },
+    "app/helpers": {
+      "path": "app/helpers",
+      "purpose": "Helper functions",
+      "fileCount": 71,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "account_notification_helper.rb",
+        "accounts_helper.rb",
+        "alignments_helper.rb"
+      ]
+    },
+    "app/middleware": {
+      "path": "app/middleware",
+      "purpose": "Middleware",
+      "fileCount": 8,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "enhanced_cookie_store.rb",
+        "load_account.rb",
+        "prevent_non_multipart_parse.rb"
+      ]
+    },
+    "app/models": {
+      "path": "app/models",
+      "purpose": "Data models",
+      "fileCount": 289,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "abstract_assignment.rb",
+        "abstract_course.rb",
+        "access_token.rb"
+      ]
+    },
+    "app/services": {
+      "path": "app/services",
+      "purpose": "Business logic services",
+      "fileCount": 16,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "application_service.rb",
+        "auto_grade_orchestration_service.rb",
+        "checkpoints.rb"
+      ]
+    },
+    "build/vendor": {
+      "path": "build/vendor",
+      "purpose": "Third-party code",
+      "fileCount": 1,
+      "lastAccessed": 1775503142858,
+      "keyFiles": [
+        "woff-code-latest.zip"
+      ]
+    },
+    "doc/api": {
+      "path": "doc/api",
+      "purpose": "API routes",
+      "fileCount": 46,
+      "lastAccessed": 1775503142859,
+      "keyFiles": [
+        "README.md",
+        "api_routes.rb",
+        "assignment_selection_placement.md"
+      ]
+    },
+    "doc/examples": {
+      "path": "doc/examples",
+      "purpose": "Example code",
+      "fileCount": 5,
+      "lastAccessed": 1775503142859,
+      "keyFiles": [
+        "README",
+        "group_assignment.md",
+        "question_specific_statistics.md"
+      ]
+    },
+    "docker-compose/config": {
+      "path": "docker-compose/config",
+      "purpose": "Configuration files",
+      "fileCount": 11,
+      "lastAccessed": 1775503142859,
+      "keyFiles": [
+        "cache_store.yml",
+        "consul.yml",
+        "database.yml"
+      ]
+    },
+    "lib/api": {
+      "path": "lib/api",
+      "purpose": "API routes",
+      "fileCount": 1,
+      "lastAccessed": 1775503142859,
+      "keyFiles": [
+        "errors.rb"
+      ]
+    },
+    "spec/controllers": {
+      "path": "spec/controllers",
+      "purpose": "Controllers",
+      "fileCount": 139,
+      "lastAccessed": 1775503142859,
+      "keyFiles": [
+        "accessibility_controller_spec.rb",
+        "accessibility_issues_controller_spec.rb",
+        "account_calendars_api_controller_spec.rb"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "script/common",
+      "accessCount": 5,
+      "lastAccessed": 1775506604555,
+      "type": "directory"
+    },
+    {
+      "path": "script/common/utils/common.sh",
+      "accessCount": 3,
+      "lastAccessed": 1775506248018,
+      "type": "directory"
+    },
+    {
+      "path": "script/docker_dev_setup.sh",
+      "accessCount": 3,
+      "lastAccessed": 1775506248077,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.yml",
+      "accessCount": 3,
+      "lastAccessed": 1775508193432,
+      "type": "file"
+    },
+    {
+      "path": "script/common/os/linux/impl.sh",
+      "accessCount": 2,
+      "lastAccessed": 1775506262741,
+      "type": "file"
+    },
+    {
+      "path": "script/common/os/linux/dev_setup.sh",
+      "accessCount": 2,
+      "lastAccessed": 1775506271592,
+      "type": "file"
+    },
+    {
+      "path": "script/common/utils/dory_setup.sh",
+      "accessCount": 2,
+      "lastAccessed": 1775506271798,
+      "type": "file"
+    },
+    {
+      "path": "script/common/utils/logging.sh",
+      "accessCount": 2,
+      "lastAccessed": 1775506275349,
+      "type": "file"
+    },
+    {
+      "path": "Dockerfile",
+      "accessCount": 2,
+      "lastAccessed": 1775506702458,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.override.yml",
+      "accessCount": 2,
+      "lastAccessed": 1775508218627,
+      "type": "file"
+    },
+    {
+      "path": "config/database.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503226529,
+      "type": "file"
+    },
+    {
+      "path": "config/domain.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503226860,
+      "type": "file"
+    },
+    {
+      "path": "config/redis.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503226917,
+      "type": "file"
+    },
+    {
+      "path": "config/security.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503227458,
+      "type": "file"
+    },
+    {
+      "path": "config/outgoing_mail.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503227771,
+      "type": "file"
+    },
+    {
+      "path": "config/dynamic_settings.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503228241,
+      "type": "file"
+    },
+    {
+      "path": "config/docker-compose.override.yml.example",
+      "accessCount": 1,
+      "lastAccessed": 1775503228404,
+      "type": "file"
+    },
+    {
+      "path": "doc/docker/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1775503232101,
+      "type": "file"
+    },
+    {
+      "path": "doc/docker/developing_with_docker.md",
+      "accessCount": 1,
+      "lastAccessed": 1775503236665,
+      "type": "file"
+    },
+    {
+      "path": "script",
+      "accessCount": 1,
+      "lastAccessed": 1775504610713,
+      "type": "directory"
+    },
+    {
+      "path": "script/common/os/linux",
+      "accessCount": 1,
+      "lastAccessed": 1775506262803,
+      "type": "directory"
+    },
+    {
+      "path": "script/install_assets.sh",
+      "accessCount": 1,
+      "lastAccessed": 1775506595339,
+      "type": "file"
+    },
+    {
+      "path": "lib/tasks/db_load_data.rake",
+      "accessCount": 1,
+      "lastAccessed": 1775507323444,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
