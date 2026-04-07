@@ -1,0 +1,505 @@
+/* ===== LoginPage.css ===== */
+
+/* ---------- Preloader ---------- */
+.login-preloader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: #fefefe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.login-preloader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.login-preloader .scrambled-text {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0.1rem;
+  font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: black;
+  text-shadow:
+    0 1px 1px rgba(120, 0, 150, 0.05),
+    1px 2px 2px rgba(120, 0, 150, 0.05),
+    2px 3px 3px rgba(120, 0, 150, 0.05),
+    3px 4px 4px rgba(0, 0, 0, 0.25),
+    0 0 10px rgba(128, 0, 128, 0.08);
+  animation: loginText3DGlow 1.8s ease-in-out infinite alternate;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes loginText3DGlow {
+  0% {
+    text-shadow:
+      0 1px 1px rgba(120, 0, 150, 0.05),
+      1px 2px 2px rgba(120, 0, 150, 0.05),
+      2px 3px 3px rgba(120, 0, 150, 0.05),
+      3px 4px 4px rgba(0, 0, 0, 0.25),
+      0 0 5px rgba(128, 0, 128, 0.05);
+  }
+  100% {
+    text-shadow:
+      0 2px 2px rgba(120, 0, 150, 0.06),
+      2px 4px 4px rgba(120, 0, 150, 0.06),
+      3px 5px 5px rgba(120, 0, 150, 0.06),
+      4px 6px 6px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(128, 0, 128, 0.1);
+  }
+}
+
+/* ---------- Page root ---------- */
+.login-page {
+  --lp-primary: #2c3e50;
+  --lp-secondary: #34495e;
+  --lp-accent: #3498db;
+  --lp-text: #2c3e50;
+  --lp-border: #e0e0e0;
+  --lp-hover: #f5f5f5;
+  --lp-gradient: linear-gradient(135deg, #3498db, #2c3e50);
+  --lp-gradient-hover: linear-gradient(135deg, #2980b9, #2c3e50);
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #fafafa;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- Background ---------- */
+.login-page .lp-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.login-page .lp-background img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* ---------- Header ---------- */
+.login-page .lp-header {
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.05);
+}
+
+.login-page .lp-header-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--lp-primary);
+}
+
+.login-page .lp-header-title::before {
+  content: '🏛️';
+}
+
+/* About button + dropdown */
+.login-page .lp-about-container {
+  position: relative;
+}
+
+.login-page .lp-about-btn {
+  background: var(--lp-gradient);
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-page .lp-about-btn:hover {
+  background: var(--lp-gradient-hover);
+}
+
+.login-page .lp-about-btn::after {
+  content: '';
+  display: inline-block;
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #fff;
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.login-page .lp-about-container.active .lp-about-btn::after {
+  transform: rotate(180deg);
+}
+
+.login-page .lp-about-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--lp-border);
+  border-radius: 4px;
+  z-index: 1000;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  padding: 8px 0;
+}
+
+.login-page .lp-about-container.active .lp-about-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.login-page .lp-about-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 12px; height: 12px;
+  background: #fff;
+  transform: rotate(45deg);
+  border-left: 1px solid var(--lp-border);
+  border-top: 1px solid var(--lp-border);
+}
+
+.login-page .lp-about-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  color: var(--lp-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  position: relative;
+  margin: 4px 0;
+}
+
+.login-page .lp-about-dropdown a:hover {
+  background-color: var(--lp-hover);
+  color: var(--lp-primary);
+  padding-left: 24px;
+}
+
+.login-page .lp-about-dropdown a::before {
+  content: '→';
+  opacity: 0;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+.login-page .lp-about-dropdown a:hover::before {
+  opacity: 1;
+}
+
+.login-page .lp-about-dropdown a:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.login-page .lp-about-dropdown a:nth-child(odd):hover {
+  background-color: var(--lp-hover);
+}
+
+.login-page .lp-about-dropdown a::after {
+  content: '';
+  position: absolute;
+  left: 16px; right: 16px; bottom: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--lp-border), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.login-page .lp-about-dropdown a:hover::after {
+  opacity: 1;
+}
+
+/* ---------- Login wrapper + box ---------- */
+.login-page .lp-login-wrapper {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 1rem 0;
+}
+
+.login-page .lp-login-box {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 0.5rem 1.5rem 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 20px;
+  margin: 0.5rem auto;
+}
+
+.login-page .lp-login-box .lp-logo {
+  height: 150px;
+  margin: 0 auto 2rem;
+  object-fit: contain;
+  display: block;
+}
+
+/* Custom select */
+.login-page .lp-custom-select {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.login-page .lp-select-selected {
+  background-color: #fff;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  text-align: left;
+  color: var(--lp-text);
+  font-size: 1rem;
+}
+
+.login-page .lp-select-selected::after {
+  content: "";
+  width: 0; height: 0;
+  border: 6px solid transparent;
+  border-color: #666 transparent transparent transparent;
+  transition: transform 0.3s ease;
+}
+
+.login-page .lp-select-selected.active::after {
+  transform: rotate(180deg);
+}
+
+.login-page .lp-select-items {
+  position: absolute;
+  background-color: #fff;
+  top: 100%;
+  left: 0; right: 0;
+  z-index: 99;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: none;
+}
+
+.login-page .lp-select-items.active {
+  display: block;
+}
+
+.login-page .lp-select-item {
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+  color: var(--lp-text);
+}
+
+.login-page .lp-select-item:hover {
+  background-color: #9cdde2c5;
+  border-radius: 16px;
+}
+
+/* Inputs */
+.login-page .lp-input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid var(--lp-border);
+  border-radius: 16px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.login-page .lp-input:focus {
+  border-color: var(--lp-accent);
+}
+
+/* Login options */
+.login-page .lp-login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0;
+  font-size: 1rem;
+}
+
+.login-page .lp-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  color: var(--lp-text);
+}
+
+.login-page .lp-remember input[type="checkbox"] {
+  width: 20px; height: 20px;
+  cursor: pointer;
+}
+
+.login-page .lp-forgot {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: inherit;
+}
+
+.login-page .lp-forgot:hover {
+  color: rgba(40, 176, 255, 0.87);
+}
+
+/* Submit */
+.login-page .lp-submit-btn {
+  background: var(--lp-gradient);
+  color: #fff;
+  border: none;
+  padding: 0.9rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.login-page .lp-submit-btn:hover {
+  background: var(--lp-gradient-hover);
+}
+
+/* Error shake */
+.login-page .lp-login-box.shake {
+  animation: lpShake 0.4s ease-in-out;
+}
+
+@keyframes lpShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* Error message */
+.login-page .lp-error-msg {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  min-height: 1.2em;
+}
+
+/* ---------- Footer ---------- */
+.login-page .lp-footer {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ffffff;
+  padding: 0.75rem;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---------- Custom cursor ---------- */
+.login-page {
+  cursor: none;
+}
+
+.login-page *,
+.login-page a,
+.login-page button,
+.login-page input,
+.login-page select,
+.login-page label {
+  cursor: none !important;
+}
+
+.login-page .lp-cursor-wrapper {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+.login-page .lp-custom-cursor {
+  position: fixed;
+  width: 32px; height: 32px;
+  pointer-events: none;
+  transform: translate(-4px, -2px);
+  z-index: 999999;
+  background-image: url('/cursor.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .login-page .lp-header {
+    padding: 0.5rem 1rem;
+  }
+  .login-page .lp-header-title {
+    font-size: 0.85rem;
+  }
+  .login-page .lp-login-box {
+    padding: 0.5rem 1rem 1rem;
+    max-width: 340px;
+  }
+  .login-page .lp-logo {
+    height: 100px !important;
+    margin-bottom: 1rem !important;
+  }
+  .login-page .lp-login-options {
+    font-size: 0.85rem;
+  }
+}
