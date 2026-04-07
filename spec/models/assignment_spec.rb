@@ -6925,12 +6925,12 @@ describe Assignment do
       expect(course.assignments.not_excluded_from_accessibility_scan).not_to include(classic_quiz_assignment)
     end
 
-    it "excludes external tool assignments" do
+    it "includes external tool assignments" do
       external_tool_assignment = course.assignments.create!(
         title: "External Tool Assignment",
         submission_types: "external_tool"
       )
-      expect(course.assignments.not_excluded_from_accessibility_scan).not_to include(external_tool_assignment)
+      expect(course.assignments.not_excluded_from_accessibility_scan).to include(external_tool_assignment)
     end
 
     it "excludes New Quizzes (quiz_lti) assignments" do
@@ -7215,6 +7215,14 @@ describe Assignment do
     it "excludes students with completed enrollments" do
       @student1.student_enrollments.first.complete!
       expect(@assignment.participants.include?(@student1)).to be_falsey
+    end
+
+    it "excludes students whose only relevant enrollment is concluded" do
+      student = create_users(1, return_type: :record).first
+      student_in_section(@section2, user: student)
+      student_in_section(@section1, user: student, allow_multiple_enrollments: true)
+      @course.enrollments.find_by(user: student, course_section: @section1).complete!
+      expect(@assignment.participants).not_to include(student)
     end
 
     it "excludes students with completed enrollments by date" do
@@ -14550,6 +14558,30 @@ describe Assignment do
 
       result = Assignment.where(id: [assignment1.id, assignment2.id]).not_ignored_by(teacher, "viewing")
       expect(result).not_to include(assignment1)
+    end
+  end
+
+  describe "#can_manage_rubrics?" do
+    before :once do
+      course_with_teacher(active_all: true)
+      @assignment = @course.assignments.create!
+    end
+
+    it "returns true for a teacher with manage_assignments_edit" do
+      expect(@assignment.can_manage_rubrics?(@teacher, nil)).to be true
+    end
+
+    it "returns true when user has manage_assignments_edit but not manage_rubrics" do
+      custom_role = custom_teacher_role("NoRubricsTeacher", account: @course.account)
+      @course.account.role_overrides.create!(role: custom_role, permission: :manage_rubrics, enabled: false)
+      @course.account.role_overrides.create!(role: custom_role, permission: :manage_assignments_edit, enabled: true)
+      custom_teacher = course_with_user("TeacherEnrollment", active_all: true, course: @course, role: custom_role).user
+      expect(@assignment.can_manage_rubrics?(custom_teacher, nil)).to be true
+    end
+
+    it "returns false for a student" do
+      student = course_with_student(active_all: true, course: @course).user
+      expect(@assignment.can_manage_rubrics?(student, nil)).to be false
     end
   end
 end

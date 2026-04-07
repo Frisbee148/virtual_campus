@@ -187,7 +187,7 @@ class AbstractAssignment < ApplicationRecord
   }
   scope :not_type_quiz_lti, -> { where.not(id: type_quiz_lti) }
   scope :not_excluded_from_accessibility_scan, lambda {
-    where.not(submission_types: ["online_quiz", "external_tool"])
+    where.not(submission_types: "online_quiz")
          .where.not(id: type_quiz_lti)
   }
 
@@ -1707,12 +1707,12 @@ class AbstractAssignment < ApplicationRecord
     overridden_users
   end
 
-  def students_with_visibility(scope = nil, user_ids = nil)
+  def students_with_visibility(scope = nil, user_ids = nil, include_concluded: true)
     scope ||= context.all_students.where("enrollments.workflow_state NOT IN ('inactive', 'rejected')")
     return scope unless differentiated_assignments_applies?
 
     context.shard.activate do
-      scope.able_to_see_assignment_in_course_with_da(id, context.id, user_ids)
+      scope.able_to_see_assignment_in_course_with_da(id, context.id, user_ids, include_concluded:)
     end
   end
 
@@ -2191,6 +2191,10 @@ class AbstractAssignment < ApplicationRecord
     final_grader_id.blank? || context.grants_right?(user, :select_final_grade)
   end
 
+  def can_manage_rubrics?(user, session = nil)
+    grants_right?(user, session, :update)
+  end
+
   def user_can_read_grades?(user, session = nil)
     RequestCache.cache("user_can_read_grades", self, user, session) do
       context.grants_right?(user, session, :view_all_grades) ||
@@ -2214,7 +2218,7 @@ class AbstractAssignment < ApplicationRecord
   def participants_with_visibility(opts = {})
     users = context.participating_admins
 
-    student_scope = students_with_visibility(context.participating_students_by_date)
+    student_scope = students_with_visibility(context.participating_students_by_date, include_concluded: false)
     student_scope = student_scope.where.not(id: opts[:excluded_user_ids]) if opts[:excluded_user_ids]
     applicable_students = student_scope.to_a
     users += applicable_students
@@ -4353,6 +4357,7 @@ class AbstractAssignment < ApplicationRecord
         submission.grade_posting_in_progress = true
         submission.broadcast_notifications
         submission.grade_posting_in_progress = false
+        submission.create_alert_on_post if submission.graded?
       end
     end
 
