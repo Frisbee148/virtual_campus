@@ -55,7 +55,7 @@ export const ROLE_ROUTES: RoleRouteMap = {
   student: '/dashboard/student',
   faculty: '/dashboard/faculty',
   staff: '/dashboard/staff',
-  admin: '/admin/dashboard',
+  admin: '/dashboard/admin',
   guardian: '/dashboard/guardian',
   hod: '/dashboard/hod',
   default: '/dashboard',

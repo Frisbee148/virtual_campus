@@ -1095,6 +1095,14 @@ CanvasRails::Application.routes.draw do
     get "eportfolios" => "eportfolios#user_index", :as => :dashboard_eportfolios
     post "comment_session" => "services_api#start_kaltura_session", :as => :dashboard_comment_session
     delete "ignore_stream_item/:id" => "users#ignore_stream_item", :as => :dashboard_ignore_stream_item
+    
+    # Role-specific dashboard routes
+    get "student" => "users#student_dashboard"
+    get "faculty" => "users#faculty_dashboard"
+    get "staff" => "users#staff_dashboard"
+    get "admin" => "users#admin_dashboard"
+    get "guardian" => "users#guardian_dashboard"
+    get "hod" => "users#hod_dashboard"
   end
 
   resources :plugins, only: %i[index show update]

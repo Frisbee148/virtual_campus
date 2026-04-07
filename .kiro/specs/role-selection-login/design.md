@@ -2,17 +2,20 @@
 
 ## Overview
 
-This feature adds a role selection dialog to the existing Canvas LMS login page, enabling users to select their role (Student, Faculty, Staff, Admin, Guardian/Parent, or HOD) before authentication. The selected role is persisted in sessionStorage and used by the frontend router to direct users to role-appropriate pages after successful login.
+This feature adds a role selection dialog to the existing Canvas LMS login page, enabling users to select their role (Student, Faculty, Staff, Admin, Guardian/Parent, or HOD) before authentication. The selected role is persisted in sessionStorage and used by the frontend router to direct users to role-specific dashboards after successful login.
 
-This is a frontend-only modification that enhances the existing login page at `app/views/login/canvas/_new_login_content.html.erb` without altering backend authentication logic or creating new pages.
+This implementation includes both frontend modifications (role selection dialog) and backend modifications (role-specific dashboard routes and views). Each role will have its own dedicated dashboard route (e.g., `/dashboard/student`, `/dashboard/faculty`) that renders a role-specific view.
 
 ### Key Design Decisions
 
-1. **Frontend-Only Implementation**: No backend changes required; role selection is purely for frontend routing
-2. **SessionStorage for Persistence**: Role selection persists across authentication failures but clears on successful login
-3. **InstUI Modal Component**: Leverages Canvas's existing InstUI modal patterns for consistency
-4. **Progressive Enhancement**: Existing login functionality remains unchanged; role selection is additive
-5. **Accessibility-First**: Full keyboard navigation and screen reader support from the start
+1. **Role-Specific Dashboards**: Each role has a dedicated dashboard route and view template, allowing for role-appropriate customization
+2. **Backend Route Duplication**: Six new routes and controller actions created by copying the base dashboard implementation
+3. **Frontend-Only Role Selection**: Role selection dialog is purely frontend; no backend authentication changes
+4. **SessionStorage for Persistence**: Role selection persists across authentication failures but clears on successful login
+5. **InstUI Modal Component**: Leverages Canvas's existing InstUI modal patterns for consistency
+6. **Progressive Enhancement**: Existing login functionality remains unchanged; role selection is additive
+7. **Accessibility-First**: Full keyboard navigation and screen reader support from the start
+8. **Backward Compatibility**: Base `/dashboard` route remains for users without role selection
 
 ## Architecture
 
@@ -39,9 +42,22 @@ LoginPage (existing ERB template)
    
 2. **Frontend Router**: Post-authentication routing logic
    - Read role from sessionStorage
-   - Route to role-specific page or default landing page
+   - Route to role-specific dashboard page
+   - Map roles to dedicated dashboard routes
 
-3. **SessionStorage**: Browser storage for role persistence
+3. **Backend Routes**: `config/routes.rb`
+   - Add six new role-specific dashboard routes
+   - Each route maps to a dedicated controller action
+
+4. **Backend Controller**: `app/controllers/users_controller.rb`
+   - Add six new dashboard action methods (one per role)
+   - Each method renders a role-specific view template
+
+5. **View Templates**: `app/views/users/`
+   - Create six role-specific dashboard templates
+   - Each template based on the base dashboard template
+
+6. **SessionStorage**: Browser storage for role persistence
    - Key: `canvas_selected_role`
    - Value: One of `['student', 'faculty', 'staff', 'admin', 'guardian', 'hod']`
 
@@ -54,6 +70,7 @@ sequenceDiagram
     participant Storage as SessionStorage
     participant LoginForm
     participant Router as Frontend Router
+    participant Backend as Rails Backend
 
     User->>Dialog: Page loads
     Dialog->>Storage: Check for existing role
@@ -72,10 +89,11 @@ sequenceDiagram
     LoginForm->>LoginForm: Submit authentication
     
     alt Authentication succeeds
-        LoginForm->>Storage: Clear role selection
         LoginForm->>Router: Trigger navigation
-        Router->>Storage: Read role (before clear)
-        Router->>User: Navigate to role-specific page
+        Router->>Storage: Read selected role
+        Router->>Storage: Clear role selection
+        Router->>Backend: Navigate to /dashboard/{role}
+        Backend->>User: Render role-specific dashboard
     else Authentication fails
         LoginForm->>Storage: Keep role selection
         LoginForm->>User: Show error, allow retry
@@ -188,9 +206,45 @@ function navigateAfterLogin(): void
 
 **Responsibilities**:
 - Read selected role from sessionStorage
-- Map role to appropriate route
-- Navigate to role-specific page or default
-- Handle missing role gracefully
+- Map role to appropriate route using ROLE_ROUTES
+- Navigate to role-specific dashboard (e.g., `/dashboard/student`)
+- Handle missing role gracefully (navigate to default `/dashboard`)
+- Clear role from sessionStorage after navigation
+
+**Implementation**:
+```typescript
+const ROLE_ROUTES: RoleRouteMap = {
+  student: '/dashboard/student',
+  faculty: '/dashboard/faculty',
+  staff: '/dashboard/staff',
+  admin: '/dashboard/admin',
+  guardian: '/dashboard/guardian',
+  hod: '/dashboard/hod',
+  default: '/dashboard'
+}
+
+function navigateAfterLogin(): void {
+  const roleData = sessionStorage.getItem('canvas_selected_role')
+  let targetRoute = ROLE_ROUTES.default
+  
+  if (roleData) {
+    try {
+      const { role } = JSON.parse(roleData)
+      if (validateRole(role)) {
+        targetRoute = ROLE_ROUTES[role]
+      }
+    } catch (error) {
+      console.error('Failed to parse role data:', error)
+    }
+    
+    // Clear role after reading
+    sessionStorage.removeItem('canvas_selected_role')
+  }
+  
+  // Navigate to the determined route
+  window.location.href = targetRoute
+}
+```
 
 ## Data Models
 
@@ -229,12 +283,233 @@ const ROLE_ROUTES: RoleRouteMap = {
   student: '/dashboard/student',
   faculty: '/dashboard/faculty',
   staff: '/dashboard/staff',
-  admin: '/admin/dashboard',
+  admin: '/dashboard/admin',
   guardian: '/dashboard/guardian',
   hod: '/dashboard/hod',
   default: '/dashboard'
 }
 ```
+
+## Role-Specific Dashboard Implementation
+
+### Overview
+
+Each role will have its own dedicated dashboard route and controller action. The base dashboard functionality will be duplicated and customized for each role to provide role-appropriate content and features.
+
+### Backend Routes
+
+**Location**: `config/routes.rb`
+
+Add the following routes after the existing dashboard routes:
+
+```ruby
+# Role-specific dashboards
+get "dashboard/student" => "users#student_dashboard", as: :student_dashboard
+get "dashboard/faculty" => "users#faculty_dashboard", as: :faculty_dashboard
+get "dashboard/staff" => "users#staff_dashboard", as: :staff_dashboard
+get "dashboard/admin" => "users#admin_dashboard", as: :admin_dashboard
+get "dashboard/guardian" => "users#guardian_dashboard", as: :guardian_dashboard
+get "dashboard/hod" => "users#hod_dashboard", as: :hod_dashboard
+```
+
+### Backend Controller Actions
+
+**Location**: `app/controllers/users_controller.rb`
+
+Each role-specific dashboard method will be based on the existing `user_dashboard` method but customized for the role:
+
+```ruby
+def student_dashboard
+  # Copy base dashboard logic from user_dashboard
+  # Customize for student-specific features
+  @dashboard_role = 'student'
+  render_role_dashboard
+end
+
+def faculty_dashboard
+  @dashboard_role = 'faculty'
+  render_role_dashboard
+end
+
+def staff_dashboard
+  @dashboard_role = 'staff'
+  render_role_dashboard
+end
+
+def admin_dashboard
+  @dashboard_role = 'admin'
+  render_role_dashboard
+end
+
+def guardian_dashboard
+  @dashboard_role = 'guardian'
+  render_role_dashboard
+end
+
+def hod_dashboard
+  @dashboard_role = 'hod'
+  render_role_dashboard
+end
+
+private
+
+def render_role_dashboard
+  # Shared dashboard rendering logic
+  # Uses @dashboard_role to customize behavior
+  # Delegates to user_dashboard for base functionality
+  user_dashboard
+end
+```
+
+### Frontend View Templates
+
+**Approach**: Create role-specific view templates by copying and customizing the base dashboard template.
+
+**Base Template**: `app/views/users/user_dashboard.html.erb` (or similar)
+
+**New Templates**:
+- `app/views/users/student_dashboard.html.erb`
+- `app/views/users/faculty_dashboard.html.erb`
+- `app/views/users/staff_dashboard.html.erb`
+- `app/views/users/admin_dashboard.html.erb`
+- `app/views/users/guardian_dashboard.html.erb`
+- `app/views/users/hod_dashboard.html.erb`
+
+**Implementation Steps**:
+1. Identify the current dashboard view template
+2. Copy the template for each role
+3. Add role-specific customizations to each template
+4. Ensure each template loads role-appropriate JavaScript bundles
+5. Add role-specific CSS classes to body for styling
+
+**Template Customization Example**:
+```erb
+<%# app/views/users/student_dashboard.html.erb %>
+<% add_body_class "student-dashboard" %>
+<% js_bundle :student_dashboard %>
+<% css_bundle :student_dashboard %>
+
+<!-- Base dashboard content with student-specific modifications -->
+<div class="dashboard-container student-view">
+  <!-- Student-specific dashboard content -->
+</div>
+```
+
+### Frontend JavaScript Bundles
+
+**Location**: `ui/features/dashboard/`
+
+Create role-specific entry points:
+
+```
+ui/features/dashboard/
+├── index.tsx (base dashboard)
+├── student/
+│   └── index.tsx (student dashboard entry)
+├── faculty/
+│   └── index.tsx (faculty dashboard entry)
+├── staff/
+│   └── index.tsx (staff dashboard entry)
+├── admin/
+│   └── index.tsx (admin dashboard entry)
+├── guardian/
+│   └── index.tsx (guardian dashboard entry)
+└── hod/
+    └── index.tsx (HOD dashboard entry)
+```
+
+Each role-specific entry point will:
+1. Import shared dashboard components
+2. Configure role-specific features
+3. Render role-appropriate UI elements
+
+### Frontend CSS Bundles
+
+**Location**: `app/stylesheets/bundles/`
+
+Create role-specific stylesheets:
+
+```
+app/stylesheets/bundles/
+├── dashboard.scss (base)
+├── student_dashboard.scss
+├── faculty_dashboard.scss
+├── staff_dashboard.scss
+├── admin_dashboard.scss
+├── guardian_dashboard.scss
+└── hod_dashboard.scss
+```
+
+Each stylesheet will:
+1. Import base dashboard styles
+2. Add role-specific style overrides
+3. Customize colors, layouts, or components for the role
+
+### Implementation Strategy
+
+**Phase 1: Duplicate Base Dashboard**
+1. Identify the current dashboard implementation (controller action, view template, JS bundle, CSS bundle)
+2. Create copies for each role following the naming conventions above
+3. Ensure each copy works independently
+
+**Phase 2: Add Routes**
+1. Add role-specific routes to `config/routes.rb`
+2. Test that each route renders correctly
+
+**Phase 3: Integrate with Role Selection**
+1. Update `loginRouter.ts` to use the new role-specific routes
+2. Test navigation from login to each role-specific dashboard
+
+**Phase 4: Customize Dashboards**
+1. Add role-specific features to each dashboard (future work)
+2. Customize UI elements for each role (future work)
+
+### Migration Path
+
+**Backward Compatibility**:
+- The base `/dashboard` route remains unchanged
+- Users without role selection will continue to use the default dashboard
+- Existing bookmarks and links continue to work
+
+**Gradual Rollout**:
+- Initially, all role-specific dashboards will be identical to the base dashboard
+- Customizations can be added incrementally per role
+- Feature flags can control role-specific features
+
+### Dashboard Duplication Checklist
+
+When implementing role-specific dashboards, follow this checklist for each role:
+
+**Backend (Ruby/Rails)**:
+- [ ] Add route in `config/routes.rb` (e.g., `get "dashboard/student" => "users#student_dashboard"`)
+- [ ] Add controller action in `app/controllers/users_controller.rb`
+- [ ] Copy base dashboard view template to role-specific template
+- [ ] Test route renders correctly
+
+**Frontend (JavaScript/React)**:
+- [ ] Create role-specific JS bundle entry point in `ui/features/dashboard/{role}/index.tsx`
+- [ ] Configure webpack to build the new bundle
+- [ ] Ensure role-specific template loads the correct JS bundle
+- [ ] Test JavaScript loads and executes correctly
+
+**Styling (CSS/SCSS)**:
+- [ ] Create role-specific stylesheet in `app/stylesheets/bundles/{role}_dashboard.scss`
+- [ ] Import base dashboard styles
+- [ ] Add role-specific body class in view template
+- [ ] Ensure role-specific template loads the correct CSS bundle
+- [ ] Test styles apply correctly
+
+**Integration**:
+- [ ] Update `ROLE_ROUTES` constant in `loginRouter.ts`
+- [ ] Test navigation from login page to role-specific dashboard
+- [ ] Verify sessionStorage is cleared after navigation
+- [ ] Test backward compatibility (default dashboard still works)
+
+**Verification**:
+- [ ] Manual test: Select role, login, verify correct dashboard loads
+- [ ] Manual test: Verify dashboard displays correctly
+- [ ] Manual test: Verify existing dashboard functionality works
+- [ ] Automated test: Add integration test for role-specific routing
 
 ## Correctness Properties
 
@@ -516,6 +791,22 @@ Integration tests will verify the feature works correctly with existing Canvas s
 - Existing form validation still works (Requirement 6.2)
 - Existing error handling still works (Requirement 6.3)
 - Existing accessibility features still work (Requirement 6.4)
+
+**Role-Specific Dashboard Routing**:
+- Each role navigates to correct dashboard route after login (Requirement 5.2, 5.3)
+- Student role navigates to `/dashboard/student`
+- Faculty role navigates to `/dashboard/faculty`
+- Staff role navigates to `/dashboard/staff`
+- Admin role navigates to `/dashboard/admin`
+- Guardian role navigates to `/dashboard/guardian`
+- HOD role navigates to `/dashboard/hod`
+- No role selected navigates to `/dashboard` (Requirement 5.4)
+
+**Dashboard Rendering**:
+- Each role-specific dashboard renders correctly
+- Each dashboard loads appropriate JavaScript bundles
+- Each dashboard loads appropriate CSS bundles
+- Each dashboard displays role-appropriate content
 
 **Styling Integration**:
 - Dialog uses Canvas brandable CSS variables (Requirement 8.1)

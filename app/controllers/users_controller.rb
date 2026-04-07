@@ -558,6 +558,36 @@ class UsersController < ApplicationController
     add_body_class "dashboard-is-planner" if show_planner?
   end
 
+  def student_dashboard
+    @dashboard_role = 'student'
+    render_role_dashboard
+  end
+
+  def faculty_dashboard
+    @dashboard_role = 'faculty'
+    render_role_dashboard
+  end
+
+  def staff_dashboard
+    @dashboard_role = 'staff'
+    render_role_dashboard
+  end
+
+  def admin_dashboard
+    @dashboard_role = 'admin'
+    render_role_dashboard
+  end
+
+  def guardian_dashboard
+    @dashboard_role = 'guardian'
+    render_role_dashboard
+  end
+
+  def hod_dashboard
+    @dashboard_role = 'hod'
+    render_role_dashboard
+  end
+
   def dashboard_stream_items
     cancel_cache_buster
 
@@ -3070,6 +3100,13 @@ class UsersController < ApplicationController
                    .any? { |e| e.course.feature_enabled?(:athena_learning_agent_button) }
     end
     load_learning_agent_env if has_flagged_course
+  end
+
+  def render_role_dashboard
+    # Shared dashboard rendering logic
+    # Uses @dashboard_role to customize behavior
+    # Delegates to user_dashboard for base functionality
+    user_dashboard
   end
 
   def google_drive_client
