@@ -498,6 +498,18 @@
       "type": "directory"
     },
     {
+      "path": "docker-compose.yml",
+      "accessCount": 5,
+      "lastAccessed": 1775572214701,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/application_controller.rb",
+      "accessCount": 4,
+      "lastAccessed": 1775572993727,
+      "type": "file"
+    },
+    {
       "path": "script/common/utils/common.sh",
       "accessCount": 3,
       "lastAccessed": 1775506248018,
@@ -510,9 +522,21 @@
       "type": "file"
     },
     {
-      "path": "docker-compose.yml",
+      "path": "docker-compose.override.yml",
       "accessCount": 3,
-      "lastAccessed": 1775508193432,
+      "lastAccessed": 1775572222770,
+      "type": "file"
+    },
+    {
+      "path": "gems/plugins",
+      "accessCount": 3,
+      "lastAccessed": 1775572623996,
+      "type": "directory"
+    },
+    {
+      "path": "config/routes.rb",
+      "accessCount": 3,
+      "lastAccessed": 1775572649616,
       "type": "file"
     },
     {
@@ -546,9 +570,27 @@
       "type": "file"
     },
     {
-      "path": "docker-compose.override.yml",
+      "path": "Gemfile.d/faculty.rb",
       "accessCount": 2,
-      "lastAccessed": 1775508218627,
+      "lastAccessed": 1775572270172,
+      "type": "file"
+    },
+    {
+      "path": "faculty/lib/faculty/engine.rb",
+      "accessCount": 2,
+      "lastAccessed": 1775572638847,
+      "type": "file"
+    },
+    {
+      "path": "faculty/config/routes.rb",
+      "accessCount": 2,
+      "lastAccessed": 1775572643867,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/dashboards_controller.rb",
+      "accessCount": 2,
+      "lastAccessed": 1775572995412,
       "type": "file"
     },
     {
@@ -627,6 +669,120 @@
       "path": "lib/tasks/db_load_data.rake",
       "accessCount": 1,
       "lastAccessed": 1775507323444,
+      "type": "file"
+    },
+    {
+      "path": "faculty/faculty.gemspec",
+      "accessCount": 1,
+      "lastAccessed": 1775572202011,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/views/faculty/dashboards/index.html.erb",
+      "accessCount": 1,
+      "lastAccessed": 1775572447947,
+      "type": "file"
+    },
+    {
+      "path": "gems",
+      "accessCount": 1,
+      "lastAccessed": 1775572619510,
+      "type": "directory"
+    },
+    {
+      "path": "gems/plugins/academic_benchmark/lib/academic_benchmark/engine.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775572633408,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-02.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572929885,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-07.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572930388,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-11.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572930803,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-14.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572931201,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-18.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572932143,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-22.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572932565,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-27.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572932921,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-31.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572933377,
+      "type": "file"
+    },
+    {
+      "path": "reference/Screenshot From 2026-03-28 12-32-35.png",
+      "accessCount": 1,
+      "lastAccessed": 1775572933724,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/views/layouts/faculty.html.erb",
+      "accessCount": 1,
+      "lastAccessed": 1775572987712,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/courses_controller.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775573003646,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/at_risk_students_controller.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775573006492,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/batch_insights_controller.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775573007619,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/calendar_controller.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775573008045,
+      "type": "file"
+    },
+    {
+      "path": "faculty/app/controllers/faculty/timetable_controller.rb",
+      "accessCount": 1,
+      "lastAccessed": 1775573008638,
       "type": "file"
     }
   ],

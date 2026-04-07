@@ -71,7 +71,7 @@ ready(() => {
     },
   })
 
-  $('#login_form').submit(function (_event) {
+  $('#login_form').submit(function (event) {
     const data = $(this).getFormData<
       Partial<{
         unique_id: string
@@ -92,13 +92,47 @@ ready(() => {
     }
 
     if (success) {
+      // Prevent default form submission to handle with AJAX
+      event.preventDefault()
+      
       // disable the button to avoid double-submit
       const $btn = $(this).find('input[type="submit"]')
       $btn.val($btn.data('disable-with'))
       $btn.prop('disabled', true)
+      
+      const $form = $(this)
+      
+      // Submit form via fetch API to properly handle redirects
+      fetch($form.attr('action') || '/login/canvas', {
+        method: 'POST',
+        body: new URLSearchParams($form.serialize()),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'manual' // Don't follow redirects automatically
+      }).then(response => {
+        if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 303) {
+          // Successful authentication - server is redirecting
+          // Use role-based routing instead of following server redirect
+          import('../../shared/util/loginRouter').then(module => {
+            module.navigateAfterLogin()
+          }).catch((error: Error) => {
+            console.error('Failed to load loginRouter:', error)
+            // Fallback to default dashboard if router fails
+            window.location.href = '/dashboard'
+          })
+        } else {
+          // Authentication failed - reload page to show errors
+          window.location.reload()
+        }
+      }).catch(error => {
+        console.error('Login submission error:', error)
+        // Reload page on error
+        window.location.reload()
+      })
     }
 
-    return success
+    return false
   })
 
   const $loginForm = $('#login_form')
@@ -121,5 +155,57 @@ ready(() => {
   // do not clear session storage if previewing via the theme editor
   if (!document.querySelector('.ic-Login--previewing')) {
     sessionStorage.clear()
+  }
+
+  // Mount role selection dialog React component
+  const mountPoint = document.getElementById('role-selection-dialog-mount')
+  if (mountPoint) {
+    import('react').then(React => {
+      import('react-dom/client').then(ReactDOM => {
+        import('./react/LoginPageContainer').then(module => {
+          const LoginPageContainer = module.default
+          const root = ReactDOM.createRoot(mountPoint)
+          
+          // Error boundary for graceful failure handling
+          class ErrorBoundary extends React.Component<
+            {children: React.ReactNode},
+            {hasError: boolean}
+          > {
+            constructor(props: {children: React.ReactNode}) {
+              super(props)
+              this.state = {hasError: false}
+            }
+
+            static getDerivedStateFromError(_error: Error) {
+              return {hasError: true}
+            }
+
+            componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+              console.error('Role selection dialog error:', error, errorInfo)
+            }
+
+            render() {
+              if (this.state.hasError) {
+                // Fail gracefully - allow login to proceed without role selection
+                return null
+              }
+              return this.props.children
+            }
+          }
+
+          root.render(
+            React.createElement(ErrorBoundary, null,
+              React.createElement(LoginPageContainer)
+            )
+          )
+        }).catch((error: Error) => {
+          console.error('Failed to load LoginPageContainer:', error)
+        })
+      }).catch((error: Error) => {
+        console.error('Failed to load react-dom/client:', error)
+      })
+    }).catch((error: Error) => {
+      console.error('Failed to load React:', error)
+    })
   }
 })
